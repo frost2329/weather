@@ -6,18 +6,36 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 
 @Repository
 public class SessionRepository {
+
     private final SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
 
-    public Session save(Session session) {
+    public Session save(Session mySession) {
         Transaction transaction = null;
-        try(var entityManger = sessionFactory.openSession()) {
-            transaction = entityManger.beginTransaction();
-            entityManger.save(session);
+        try(var session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            session.persist(mySession);
             transaction.commit();
-            return session;
+            return mySession;
+        } catch (RuntimeException e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean deleteById(UUID id) {
+        Transaction transaction = null;
+        try (var session = sessionFactory.openSession()) {
+            transaction = session.beginTransaction();
+            session.remove(session.get(Session.class, id));
+            transaction.commit();
+            return true;
         } catch (RuntimeException e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();

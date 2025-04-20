@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Weather Viewer – Homepage</title>
@@ -16,7 +16,9 @@
         </a>
         <div class="d-flex align-items-center">
             <span class="navbar-text me-3">zhukovsd</span>
-            <button class="btn btn-outline-danger">Sign out</button>
+            <form th:method="POST" th:action="@{/logout}">
+                <button type="submit" class="btn btn-outline-danger">Sign out</button>
+            </form>
         </div>
     </div>
 </nav>

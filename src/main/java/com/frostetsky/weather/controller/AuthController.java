@@ -3,21 +3,26 @@ package com.frostetsky.weather.controller;
 import com.frostetsky.weather.dto.UserCreateDto;
 import com.frostetsky.weather.dto.UserLoginDto;
 import com.frostetsky.weather.exception.IncorrectPasswordException;
+import com.frostetsky.weather.service.SessionService;
 import com.frostetsky.weather.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
     private final UserService userService;
+    private final SessionService sessionService;
 
     @GetMapping("/registration")
     public String showRegistration(@ModelAttribute("user") UserCreateDto user) {
@@ -52,15 +57,35 @@ public class AuthController {
 
         String session = userService.login(user);
 
-        Cookie cookie = new Cookie("SESSION", session);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(24 * 60 * 60);
+        ResponseCookie cookie = ResponseCookie.from("MYSESSIONID", session)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(Duration.ofHours(12))
+                .sameSite("Strict")
+                .build();
 
-        resp.addCookie(cookie);
+        resp.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
         return "redirect:index";
     }
 
+    @PostMapping("/logout")
+    public String logout(@CookieValue(value = "MYSESSIONID", required = false) String sessionId,
+                         HttpServletResponse resp) {
+        if (sessionId != null) {
+            // todo validate sessionID
+            sessionService.removeSession(UUID.fromString(sessionId));
 
+            ResponseCookie deleteCookie = ResponseCookie.from("MYSESSIONID", sessionId)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(0)
+                    .sameSite("Strict")
+                    .build();
+            resp.addHeader(HttpHeaders.SET_COOKIE, deleteCookie.toString());
+        }
+        return "redirect:login";
+    }
 }
