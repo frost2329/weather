@@ -8,7 +8,7 @@ import java.util.List;
 
 @Setter
 @Getter
-@ToString(exclude = {"locations", "sessions"})
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -22,10 +22,4 @@ public class User implements BaseEntity<Long> {
     private String login;
     @Column(nullable = false)
     private String password;
-    @Builder.Default
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Location> locations = new ArrayList<>();
-    @Builder.Default
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    private List<Session> sessions = new ArrayList<>();
 }

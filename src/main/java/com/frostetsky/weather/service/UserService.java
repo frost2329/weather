@@ -8,6 +8,8 @@ import com.frostetsky.weather.db.entity.User;
 import com.frostetsky.weather.exception.InvalidCredentialsException;
 import com.frostetsky.weather.dto.mapper.UserMapper;
 import com.frostetsky.weather.db.repository.UserRepository;
+import com.frostetsky.weather.exception.SessionNotFoundException;
+import com.frostetsky.weather.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +40,8 @@ public class UserService {
     }
 
     public UserReadDto getUserIdBySession(UUID sessionId) {
-        return userMapper.toUserReadDto(userRepository.findUserBySession(sessionId).orElseThrow(()-> new RuntimeException("Пользователь не найден")));
+        Session session = sessionService.getSessionById(sessionId).orElseThrow(SessionNotFoundException::new);
+        User user = userRepository.findById(session.getUserId()).orElseThrow(UserNotFoundException::new);
+        return userMapper.toUserReadDto(user);
     }
 }

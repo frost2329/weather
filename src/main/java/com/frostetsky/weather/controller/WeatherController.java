@@ -28,6 +28,7 @@ public class WeatherController {
         }
         //todo validate session
         UserReadDto user = userService.getUserIdBySession(UUID.fromString(sessionId));
+
         model.addAttribute("user", user);
         return "index";
     }
