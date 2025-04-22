@@ -15,12 +15,9 @@ public class UserMapper {
     private final LocationMapper locationMapper;
 
     public UserReadDto toUserReadDto(User user) {
-        List<LocationDto> locations = new ArrayList<>();
-        locations = user.getLocations().stream().map(locationMapper::toLocationDto).toList();
         return new UserReadDto(
                 user.getId(),
-                user.getLogin(),
-                locations
+                user.getLogin()
         );
     }
 }

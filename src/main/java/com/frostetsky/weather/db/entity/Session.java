@@ -19,9 +19,8 @@ public class Session implements BaseEntity<UUID> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_id")
+    private Long userId;
     @Builder.Default
     @Column(name = "expires_at")
     private Timestamp expiresAt = Timestamp.from(Instant.now().plus(1, ChronoUnit.DAYS));

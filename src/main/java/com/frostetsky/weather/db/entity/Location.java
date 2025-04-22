@@ -5,7 +5,7 @@ import lombok.*;
 
 @Setter
 @Getter
-@ToString(exclude = "user")
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -18,7 +18,6 @@ public class Location implements BaseEntity<Long> {
     private String name;
     private double latitude;
     private double longitude;
-    @ManyToOne()
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_id")
+    private Long userId;
 }

@@ -76,4 +76,12 @@ public class UserRepository {
             throw new RuntimeException(e);
         }
     }
+
+    public Optional<User> findById(Long id) {
+        try (var session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.get(User.class, id));
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

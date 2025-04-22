@@ -6,6 +6,7 @@ import com.frostetsky.weather.db.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -14,11 +15,15 @@ public class SessionService {
     private final SessionRepository sessionRepository;
 
     public Session createSession(User user) {
-        Session session = Session.builder().user(user).build();
+        Session session = Session.builder().userId(user.getId()).build();
         return sessionRepository.save(session);
     }
 
     public void removeSession(UUID sessionId) {
         sessionRepository.deleteById(sessionId);
+    }
+
+    public Optional<Session> getSessionById(UUID sessionId) {
+        return sessionRepository.findById(sessionId);
     }
 }
