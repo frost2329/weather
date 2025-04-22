@@ -1,8 +1,8 @@
 package com.frostetsky.weather.service;
 
-import com.frostetsky.weather.entity.Session;
-import com.frostetsky.weather.entity.User;
-import com.frostetsky.weather.repository.SessionRepository;
+import com.frostetsky.weather.db.entity.Session;
+import com.frostetsky.weather.db.entity.User;
+import com.frostetsky.weather.db.repository.SessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

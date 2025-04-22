@@ -1,4 +1,4 @@
-package com.frostetsky.weather.entity;
+package com.frostetsky.weather.db.entity;
 
 import java.io.Serializable;
 

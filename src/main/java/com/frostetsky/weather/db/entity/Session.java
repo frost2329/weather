@@ -1,11 +1,10 @@
-package com.frostetsky.weather.entity;
+package com.frostetsky.weather.db.entity;
 
 import lombok.*;
-import org.hibernate.annotations.GenerationTime;
-import org.hibernate.annotations.Generated;
-
 import jakarta.persistence.*;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Setter
@@ -23,7 +22,7 @@ public class Session implements BaseEntity<UUID> {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @Column(name = "expires_at", insertable = false, updatable = false)
-    @Generated(GenerationTime.INSERT)
-    private Timestamp expiresAt;
+    @Builder.Default
+    @Column(name = "expires_at")
+    private Timestamp expiresAt = Timestamp.from(Instant.now().plus(1, ChronoUnit.DAYS));
 }

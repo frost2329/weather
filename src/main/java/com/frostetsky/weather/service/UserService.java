@@ -2,12 +2,16 @@ package com.frostetsky.weather.service;
 
 import com.frostetsky.weather.dto.UserCreateDto;
 import com.frostetsky.weather.dto.UserLoginDto;
-import com.frostetsky.weather.entity.Session;
-import com.frostetsky.weather.entity.User;
+import com.frostetsky.weather.dto.UserReadDto;
+import com.frostetsky.weather.db.entity.Session;
+import com.frostetsky.weather.db.entity.User;
 import com.frostetsky.weather.exception.InvalidCredentialsException;
-import com.frostetsky.weather.repository.UserRepository;
+import com.frostetsky.weather.dto.mapper.UserMapper;
+import com.frostetsky.weather.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 
 @Service
@@ -15,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
     private final SessionService sessionService;
+    private final UserMapper userMapper;
 
     public void createUser(UserCreateDto userDto) {
         userRepository.save(User.builder()
@@ -30,5 +35,9 @@ public class UserService {
         }
         Session session = sessionService.createSession(user);
         return session.getId().toString();
+    }
+
+    public UserReadDto getUserIdBySession(UUID sessionId) {
+        return userMapper.toUserReadDto(userRepository.findUserBySession(sessionId).orElseThrow(()-> new RuntimeException("Пользователь не найден")));
     }
 }

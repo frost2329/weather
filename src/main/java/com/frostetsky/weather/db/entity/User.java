@@ -1,4 +1,4 @@
-package com.frostetsky.weather.entity;
+package com.frostetsky.weather.db.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,8 +22,10 @@ public class User implements BaseEntity<Long> {
     private String login;
     @Column(nullable = false)
     private String password;
-    @OneToMany(mappedBy = "user")
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Location> locations = new ArrayList<>();
-    @OneToMany(mappedBy = "user")
+    @Builder.Default
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Session> sessions = new ArrayList<>();
 }
