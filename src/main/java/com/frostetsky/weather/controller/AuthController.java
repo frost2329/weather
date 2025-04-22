@@ -67,7 +67,7 @@ public class AuthController {
 
         resp.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        return "redirect:index";
+        return "redirect:home";
     }
 
     @PostMapping("/logout")

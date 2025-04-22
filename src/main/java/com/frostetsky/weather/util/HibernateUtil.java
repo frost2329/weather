@@ -1,9 +1,9 @@
 package com.frostetsky.weather.util;
 
 
-import com.frostetsky.weather.entity.Location;
-import com.frostetsky.weather.entity.Session;
-import com.frostetsky.weather.entity.User;
+import com.frostetsky.weather.db.entity.Location;
+import com.frostetsky.weather.db.entity.Session;
+import com.frostetsky.weather.db.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

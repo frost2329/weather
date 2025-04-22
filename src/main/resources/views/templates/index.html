@@ -10,15 +10,22 @@
 
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-            <img src="../../../resources/views/static/images/weather-app.png" alt="" width="30" height="24" class="d-inline-block align-text-top">
+        <a class="navbar-brand" th:href="@{/}">
+            <img th:src="@{/views/static/images/weather-app.png}" alt="" width="30" height="24" class="d-inline-block align-text-top">
             Weather Tracker
         </a>
         <div class="d-flex align-items-center">
-            <span class="navbar-text me-3">zhukovsd</span>
-            <form th:method="POST" th:action="@{/logout}">
-                <button type="submit" class="btn btn-outline-danger">Sign out</button>
-            </form>
+            <th:block th:if="${user != null}">
+                <span th:text="${user.login}" class="navbar-text me-3"></span>
+                <form th:method="POST" th:action="@{/logout}">
+                    <button type="submit" class="btn btn-outline-danger">Sign out</button>
+                </form>
+            </th:block>
+
+            <div th:if="${user == null}" class="d-flex gap-2">
+                <a th:href="@{/login}" class="btn btn-outline-primary px-4">Sign in</a>
+                <a th:href="@{/registration}" class="btn btn-outline-success px-4">Sign up</a>
+            </div>
         </div>
     </div>
 </nav>

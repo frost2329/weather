@@ -1,6 +1,6 @@
-package com.frostetsky.weather.repository;
+package com.frostetsky.weather.db.repository;
 
-import com.frostetsky.weather.entity.Session;
+import com.frostetsky.weather.db.entity.Session;
 import com.frostetsky.weather.util.HibernateUtil;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
