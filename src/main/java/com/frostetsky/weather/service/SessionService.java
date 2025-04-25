@@ -20,7 +20,7 @@ public class SessionService {
     }
 
     public void removeSession(UUID sessionId) {
-        sessionRepository.deleteById(sessionId);
+        sessionRepository.delete(sessionId);
     }
 
     public Optional<Session> getSessionById(UUID sessionId) {

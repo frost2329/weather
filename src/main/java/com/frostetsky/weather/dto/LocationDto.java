@@ -1,7 +1,13 @@
 package com.frostetsky.weather.dto;
 
-public record LocationDto(Long id,
-                          String name,
-                          Double latitude,
-                          Double longitude) {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record LocationDto(
+        String name,
+        String lat,
+        String lon,
+        String country,
+        String state
+){
 }

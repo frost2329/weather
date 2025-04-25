@@ -29,6 +29,11 @@ public class AuthController {
         return "sign-up";
     }
 
+    @GetMapping("/login")
+    public String showLogin(@ModelAttribute("user") UserLoginDto user) {
+        return "sign-in";
+    }
+
     @PostMapping("/registration")
     public String registration(@ModelAttribute("user") @Valid UserCreateDto user,
                                BindingResult bindingResult) {
@@ -42,10 +47,6 @@ public class AuthController {
         return "redirect:/login";
     }
 
-    @GetMapping("/login")
-    public String showLogin(@ModelAttribute("user") UserLoginDto user) {
-        return "sign-in";
-    }
 
     @PostMapping("/login")
     public String login(@ModelAttribute("user") @Valid UserLoginDto user,
