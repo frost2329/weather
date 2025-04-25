@@ -3,8 +3,6 @@ package com.frostetsky.weather.db.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @Setter
 @Getter
