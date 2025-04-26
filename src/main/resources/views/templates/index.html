@@ -44,7 +44,7 @@
         </form>
 
         <div>
-            <div class="row">
+            <div th:if="${weatherCards != null}" class="row">
                 <div th:each="card:${weatherCards}" class="col-12 col-lg-3 col-md-6 mb-4">
                     <div class="card h-100 position-relative weather-card">
                         <form th:action="@{/delete-location}" th:method="post" class="position-absolute weather-card-delete-form">
@@ -61,6 +61,29 @@
                                 <span th:text="${card.description}">Clear sky</span>
                             </p>
                             <p class="card-text mb-1" th:text="${'Humidity: '+ card.humidity + '%'}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div th:if="${locations != null}" class="row">
+                <div th:each="location : ${locations}" class="col-12 col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title" th:text="${location.name}"></h5>
+                            <p class="card-text mb-1" th:text="${'Latitude: ' + location.lat}"></p>
+                            <p class="card-text mb-1" th:text="${'Longitude: ' + location.lon}"></p>
+                            <p class="card-text mb-1" th:text="${'Country: ' + location.country}"></p>
+                            <p class="card-text mb-3" th:text="${'State: ' + location.state}"></p>
+
+                            <form th:action="@{/add-location}" th:method="POST"  class="mt-auto" >
+                                <input type="hidden" name="name" th:value="${location.name}">
+                                <input type="hidden" name="lat" th:value="${location.lat}">
+                                <input type="hidden" name="lon" th:value="${location.lon}">
+                                <input type="hidden" name="country" th:value="${location.country}">
+                                <input type="hidden" name="state" th:value="${location.state}">
+                                <button type="submit" class="btn btn-primary w-100">Add</button>
+                            </form>
                         </div>
                     </div>
                 </div>
