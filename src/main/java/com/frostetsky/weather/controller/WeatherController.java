@@ -27,7 +27,8 @@ public class WeatherController {
     }
 
     @GetMapping("/home")
-    public String index(@CookieValue(value = "MYSESSIONID", required = false) String sessionId, Model model) {
+    public String index(@CookieValue(value = "MYSESSIONID", required = false) String sessionId,
+                        Model model) {
         if (sessionId == null) {
             return "index";
         }
@@ -43,26 +44,26 @@ public class WeatherController {
     }
 
     @GetMapping("/search")
-    public String search(@RequestParam("city") String city, Model model) {
+    public String search(@RequestParam("city") String city,
+                         @CookieValue(value = "MYSESSIONID", required = false) String sessionId,
+                         Model model) {
 
         //todo validate city
+        UserReadDto user = userService.getUserIdBySession(UUID.fromString(sessionId));
+        model.addAttribute("user", user);
 
         List<LocationDto> locations = weatherService.getLocationsByCityName(city);
         model.addAttribute("locations", locations);
-        return "search-results";
+        return "index";
     }
 
     @PostMapping("/add-location")
     public String addLocation(@ModelAttribute("location") LocationDto location,
                               @CookieValue(value = "MYSESSIONID", required = false) String sessionId) {
-
         //todo validate session
         //todo validate location
-
         UserReadDto user = userService.getUserIdBySession(UUID.fromString(sessionId));
-
         locationService.addLocationForUser(location, user.id());
-
         return "redirect:home";
     }
 
@@ -73,9 +74,7 @@ public class WeatherController {
         //todo validate session
         //todo get User by session
         //todo check user is owner of location
-
         locationService.removeLocation(locationId);
-
         return "redirect:home";
     }
 }
