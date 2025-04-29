@@ -5,12 +5,18 @@ import com.frostetsky.weather.dto.UserLoginDto;
 import com.frostetsky.weather.dto.UserReadDto;
 import com.frostetsky.weather.db.entity.Session;
 import com.frostetsky.weather.db.entity.User;
-import com.frostetsky.weather.exception.InvalidCredentialsException;
+import com.frostetsky.weather.exception.*;
 import com.frostetsky.weather.dto.mapper.UserMapper;
 import com.frostetsky.weather.db.repository.UserRepository;
-import com.frostetsky.weather.exception.SessionNotFoundException;
-import com.frostetsky.weather.exception.UserNotFoundException;
+import com.frostetsky.weather.exception.auth.AuthenticationUserException;
+import com.frostetsky.weather.exception.auth.InvalidCredentialsException;
+import com.frostetsky.weather.exception.registration.CreateUserDatabaseException;
+import com.frostetsky.weather.exception.registration.CreateUserException;
+import com.frostetsky.weather.exception.registration.PasswordMismatchException;
+import com.frostetsky.weather.exception.registration.UserAlreadyExistException;
+import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -24,19 +30,40 @@ public class UserService {
     private final UserMapper userMapper;
 
     public void createUser(UserCreateDto userDto) {
-        userRepository.save(User.builder()
-                .login(userDto.username())
-                .password(userDto.password())
-                .build());
+        if (!userDto.password().equals(userDto.repeatPassword())) {
+            throw new PasswordMismatchException();
+        }
+        try {
+            User user = userRepository.save(User.builder()
+                    .login(userDto.username())
+                    .password(userDto.password())
+                    .build());
+            if (user.getId() == null) {
+                throw new CreateUserDatabaseException();
+            }
+        } catch (ConstraintViolationException e) {
+            throw new UserAlreadyExistException(userDto.username(), e);
+        } catch (PersistenceException e) {
+            throw new CreateUserDatabaseException(e);
+        } catch (Exception e) {
+            throw new CreateUserException(e);
+        }
     }
 
-    public String login(UserLoginDto userLoginDto) {
-        User user = userRepository.getUserByLogin(userLoginDto.username()).orElseThrow(InvalidCredentialsException::new);
-        if(!userLoginDto.username().equals(user.getLogin()) || !userLoginDto.password().equals(user.getPassword())) {
-            throw new InvalidCredentialsException();
+    public String authenticateUser(UserLoginDto userLoginDto) {
+        try {
+            User user = userRepository.findByLogin(userLoginDto.username())
+                    .orElseThrow(() -> new InvalidCredentialsException("Некорректное имя пользователя"));
+            if (!userLoginDto.password().equals(user.getPassword())) {
+                throw new InvalidCredentialsException();
+            }
+            Session session = sessionService.createSession(user);
+            return session.getId().toString();
+        } catch (InvalidCredentialsException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AuthenticationUserException(e);
         }
-        Session session = sessionService.createSession(user);
-        return session.getId().toString();
     }
 
     public UserReadDto getUserIdBySession(UUID sessionId) {

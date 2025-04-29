@@ -1,6 +1,8 @@
 package com.frostetsky.weather.config;
 
-import com.frostetsky.weather.controller.AuthInterceptor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.frostetsky.weather.http.interceptor.AuthInterceptor;
 
 import com.frostetsky.weather.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
         templateResolver.setPrefix("classpath:/views/templates/");
         templateResolver.setSuffix(".html");
         templateResolver.setCharacterEncoding("UTF-8");
-        templateResolver.setCacheable(false); // Для разработки
+        templateResolver.setCacheable(false);
         return templateResolver;
     }
 
@@ -47,6 +49,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void configureViewResolvers(ViewResolverRegistry registry) {
         ThymeleafViewResolver resolver = new ThymeleafViewResolver();
+        resolver.setCharacterEncoding("UTF-8");
         resolver.setTemplateEngine(templateEngine());
         registry.viewResolver(resolver);
     }
@@ -67,6 +70,13 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor())
                 .addPathPatterns("/**")
-                .excludePathPatterns("/login", "/registration", "/static/**");
+                .excludePathPatterns("/login", "/registration", "/views/static/**");
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return mapper;
     }
 }

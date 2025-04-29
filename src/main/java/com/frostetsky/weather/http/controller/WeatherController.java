@@ -1,10 +1,9 @@
-package com.frostetsky.weather.controller;
+package com.frostetsky.weather.http.controller;
 
 import com.frostetsky.weather.dto.LocationDto;
 import com.frostetsky.weather.dto.UserReadDto;
 import com.frostetsky.weather.dto.WeatherCardDto;
 import com.frostetsky.weather.service.LocationService;
-import com.frostetsky.weather.service.UserService;
 import com.frostetsky.weather.service.WeatherService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -39,7 +37,6 @@ public class WeatherController {
 
     @GetMapping("/search")
     public String search(@RequestParam("city") String city,
-                         @CookieValue(value = "MYSESSIONID", required = false) String sessionId,
                          Model model) {
         List<LocationDto> locations = weatherService.getLocationsByCityName(city);
         model.addAttribute("locations", locations);
