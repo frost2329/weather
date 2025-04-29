@@ -3,7 +3,6 @@ package com.frostetsky.weather.db.repository;
 import com.frostetsky.weather.db.entity.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +12,7 @@ import java.util.Optional;
 public class UserRepository {
     @PersistenceContext
     private  EntityManager entityManager;
+
     private final String HQL_GET_USER_BY_LOGIN = "SELECT u FROM User u WHERE u.login = :login";
 
     @Transactional
@@ -22,7 +22,7 @@ public class UserRepository {
     }
 
     @Transactional(readOnly = true)
-    public Optional<User> getUserByLogin(String username) {
+    public Optional<User> findByLogin(String username) {
         return Optional.ofNullable(entityManager.createQuery(HQL_GET_USER_BY_LOGIN, User.class)
                 .setParameter("login", username)
                 .getSingleResult());

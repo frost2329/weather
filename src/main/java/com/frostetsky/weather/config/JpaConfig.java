@@ -18,6 +18,7 @@ import java.util.Properties;
 
 @Configuration
 @PropertySource("classpath:hibernate.properties")
+@PropertySource("classpath:application.properties")
 @EnableTransactionManagement
 @RequiredArgsConstructor
 public class JpaConfig {
