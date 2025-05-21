@@ -14,10 +14,12 @@ import com.frostetsky.weather.exception.registration.CreateUserDatabaseException
 import com.frostetsky.weather.exception.registration.CreateUserException;
 import com.frostetsky.weather.exception.registration.PasswordMismatchException;
 import com.frostetsky.weather.exception.registration.UserAlreadyExistException;
+import com.frostetsky.weather.util.PasswordUtil;
 import jakarta.persistence.PersistenceException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -29,6 +31,7 @@ public class UserService {
     private final SessionService sessionService;
     private final UserMapper userMapper;
 
+    @Transactional
     public void createUser(UserCreateDto userDto) {
         if (!userDto.password().equals(userDto.repeatPassword())) {
             throw new PasswordMismatchException();
@@ -36,7 +39,7 @@ public class UserService {
         try {
             User user = userRepository.save(User.builder()
                     .login(userDto.username())
-                    .password(userDto.password())
+                    .password(PasswordUtil.hashPassword(userDto.password()))
                     .build());
             if (user.getId() == null) {
                 throw new CreateUserDatabaseException();
@@ -50,11 +53,12 @@ public class UserService {
         }
     }
 
+    @Transactional
     public String authenticateUser(UserLoginDto userLoginDto) {
         try {
             User user = userRepository.findByLogin(userLoginDto.username())
                     .orElseThrow(() -> new InvalidCredentialsException("Некорректное имя пользователя"));
-            if (!userLoginDto.password().equals(user.getPassword())) {
+            if (!PasswordUtil.checkPassword(userLoginDto.password(), user.getPassword())) {
                 throw new InvalidCredentialsException();
             }
             Session session = sessionService.createSession(user);
@@ -66,6 +70,7 @@ public class UserService {
         }
     }
 
+    @Transactional(readOnly = true)
     public UserReadDto getUserIdBySession(UUID sessionId) {
         Session session = sessionService.getSessionById(sessionId).orElseThrow(SessionNotFoundException::new);
         User user = userRepository.findById(session.getUserId()).orElseThrow(UserNotFoundException::new);

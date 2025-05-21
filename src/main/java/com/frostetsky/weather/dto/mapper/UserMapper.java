@@ -6,9 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class UserMapper {
-
     public UserReadDto toUserReadDto(User user) {
         return new UserReadDto(
                 user.getId(),

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frostetsky.weather.dto.LocationDto;
 import com.frostetsky.weather.dto.OpenWeatherDto;
 import com.frostetsky.weather.exception.OpenWeatherApiException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.time.Duration;
 import java.util.List;
 
 @Component
+@Slf4j
 public class OpenWeatherClient {
     private static final String URL_LOCATIONS_PATH = "/geo/1.0/direct";
     private static final String URL_WEATHER_PATH = "/data/2.5/weather";
@@ -39,8 +41,8 @@ public class OpenWeatherClient {
         this.objectMapper = objectMapper;
     }
 
-
     public List<LocationDto> getLocationsByCityName(String cityName) {
+        log.info("Запрос локаций по городу {}", cityName);
         URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(URL_LOCATIONS_PATH)
                 .queryParam("q", cityName)
@@ -48,10 +50,15 @@ public class OpenWeatherClient {
                 .queryParam("appid", API_KEY)
                 .build()
                 .toUri();
-        return executeRequest(uri, new TypeReference<List<LocationDto>>() {});
+        List<LocationDto> location = executeRequest(uri, new TypeReference<List<LocationDto>>() {});
+        if (location.isEmpty()) {
+            throw new OpenWeatherApiException("Локации не найдены");
+        }
+        return location;
     }
 
     public OpenWeatherDto getWeatherByCoordinates(double longitude, double latitude) {
+        log.info("Запрос погоды по координатам lon : {}, lat : {}", longitude, latitude);
         URI uri = UriComponentsBuilder.fromHttpUrl(baseUrl)
                 .path(URL_WEATHER_PATH)
                 .queryParam("lat", latitude)
@@ -64,6 +71,7 @@ public class OpenWeatherClient {
     }
 
     private <T> T executeRequest(URI uri, TypeReference<T> typeReference) {
+        log.info("Выполнение запроса к {}", uri);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .timeout(Duration.ofSeconds(5))
@@ -72,14 +80,18 @@ public class OpenWeatherClient {
                 .build();
         try {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            log.info("Получен ответ: статус {}, тело ответа: {}", response.statusCode(), response.body());
             if (response.statusCode() != HttpStatus.OK.value()) {
+                log.error("Ошибка API. Статус {}, Тело ответа {}", response.statusCode(), response.body());
                 throw new OpenWeatherApiException("Неожиданный статус ответа : " + response.statusCode());
             }
             return objectMapper.readValue(response.body(), typeReference);
         } catch (InterruptedException e) {
+            log.error("Запрос был прерван: {}", e.getMessage(), e);
             Thread.currentThread().interrupt();
             throw new OpenWeatherApiException("Request was interrupted", e);
         } catch (IOException e) {
+            log.error("Неизвестная ошибка при выполнении запроса: {}", e.getMessage(), e);
             throw new OpenWeatherApiException("Ошибка при выполнении запроса", e);
         }
     }

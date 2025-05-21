@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class LocationRepository {
@@ -15,21 +16,22 @@ public class LocationRepository {
 
     private final String HQL_GET_LOCATIONS_BY_USER = "select l from Location l where l.userId = :userId";
 
-    @Transactional(readOnly = true)
+    public Optional<Location> findById(Long id) {
+        return Optional.ofNullable(entityManager.find(Location.class, id));
+    }
+
     public List<Location> findLocationsByUser(Long userId) {
         return entityManager.createQuery(HQL_GET_LOCATIONS_BY_USER, Location.class)
                 .setParameter("userId", userId)
                 .getResultList();
     }
 
-    @Transactional
     public Location save(Location location) {
         entityManager.persist(location);
         return location;
     }
 
-    @Transactional
-    public void delete(Long id) {
-        entityManager.remove(entityManager.find(Location.class, id));
+    public void delete(Location location) {
+        entityManager.remove(location);
     }
 }

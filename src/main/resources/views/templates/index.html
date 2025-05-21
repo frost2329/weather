@@ -34,7 +34,10 @@
     <div class="container mt-4">
         <form th:method="GET" th:action="@{/search}" class="d-flex my-4">
             <div class="input-group location-search-input-group me-3">
-                <input type="text" name="city" placeholder="Enter location" required class="form-control">
+                <input type="text" name="city"
+                       th:class="${searchErrorMessage != null ? 'form-control is-invalid' : 'form-control'}"
+                       th:placeholder="${searchErrorMessage != null ? searchErrorMessage : 'Enter location'}"
+                       required>
                 <button type="button" class="btn btn-outline-secondary btn-sm clear-input-button"
                         onclick="this.previousElementSibling.value=''">
                     &times;
