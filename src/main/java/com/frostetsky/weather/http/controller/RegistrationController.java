@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 @RequiredArgsConstructor
 public class RegistrationController {
+    public static final String REGISTRATION_PAGE = "sign-up";
     private final UserService userService;
 
     @GetMapping("/registration")
@@ -25,7 +26,7 @@ public class RegistrationController {
     public String registration(@ModelAttribute("user") @Valid UserCreateDto user,
                                BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
-            return "sign-up";
+            return REGISTRATION_PAGE;
         }
         userService.createUser(user);
         return "redirect:/login";

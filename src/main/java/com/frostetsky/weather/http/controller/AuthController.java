@@ -20,6 +20,9 @@ import static com.frostetsky.weather.util.CookieUtil.COOKIE_SESSION;
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
+
+    public static final String LOGIN_PAGE = "sign-in";
+
     private final UserService userService;
     private final SessionService sessionService;
 
@@ -33,7 +36,7 @@ public class AuthController {
                         BindingResult bindingResult,
                         HttpServletResponse resp) {
         if (bindingResult.hasErrors()) {
-            return "sign-in";
+            return LOGIN_PAGE;
         }
         String session = userService.authenticateUser(user);
         ResponseCookie cookie = CookieUtil.createSessionCookie(session);

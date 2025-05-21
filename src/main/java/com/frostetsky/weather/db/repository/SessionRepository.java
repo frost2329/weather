@@ -16,19 +16,16 @@ public class SessionRepository {
     @PersistenceContext
     private  EntityManager entityManager;
 
-    @Transactional
     public Session save(Session mySession) {
         entityManager.persist(mySession);
         return mySession;
     }
 
-    @Transactional
     public boolean delete(UUID id) {
         entityManager.remove(entityManager.find(Session.class, id));
         return true;
     }
 
-    @Transactional(readOnly = true)
     public Optional<Session> findById(UUID id) {
         return Optional.ofNullable(entityManager.find(Session.class, id));
     }

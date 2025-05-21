@@ -15,20 +15,17 @@ public class UserRepository {
 
     private final String HQL_GET_USER_BY_LOGIN = "SELECT u FROM User u WHERE u.login = :login";
 
-    @Transactional
     public User save(User user) {
         entityManager.persist(user);
         return user;
     }
 
-    @Transactional(readOnly = true)
     public Optional<User> findByLogin(String username) {
         return Optional.ofNullable(entityManager.createQuery(HQL_GET_USER_BY_LOGIN, User.class)
                 .setParameter("login", username)
                 .getSingleResult());
     }
 
-    @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
         return Optional.ofNullable(entityManager.find(User.class, id));
     }

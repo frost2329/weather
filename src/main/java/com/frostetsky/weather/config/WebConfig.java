@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frostetsky.weather.http.interceptor.AuthInterceptor;
 
+import com.frostetsky.weather.http.interceptor.LoggingInterceptor;
+import com.frostetsky.weather.http.interceptor.PublicPageInterceptor;
 import com.frostetsky.weather.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationContext;
@@ -65,12 +67,21 @@ public class WebConfig implements WebMvcConfigurer {
     public AuthInterceptor authInterceptor() {
         return new AuthInterceptor(userService); // UserService уже внедрён
     }
+    @Bean
+    public PublicPageInterceptor publicPageInterceptor() {
+        return new PublicPageInterceptor(userService); // UserService уже внедрён
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor())
                 .addPathPatterns("/**")
                 .excludePathPatterns("/login", "/registration", "/views/static/**");
+
+        registry.addInterceptor(publicPageInterceptor())
+                .addPathPatterns("/login", "/registration");
+
+        registry.addInterceptor(new LoggingInterceptor());
     }
 
     @Bean

@@ -10,7 +10,13 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "locations")
+@Table(name = "locations",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "user_city_unique",
+                        columnNames = {"name", "user_id"}
+                )
+        })
 public class Location implements BaseEntity<Long> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
