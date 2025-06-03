@@ -74,6 +74,6 @@ public class UserService {
     public UserReadDto getUserIdBySession(UUID sessionId) {
         Session session = sessionService.getSessionById(sessionId).orElseThrow(SessionNotFoundException::new);
         User user = userRepository.findById(session.getUserId()).orElseThrow(UserNotFoundException::new);
-        return userMapper.toUserReadDto(user);
+        return userMapper.toDto(user);
     }
 }
