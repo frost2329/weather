@@ -3,10 +3,9 @@ package com.frostetsky.weather.db.repository;
 import com.frostetsky.weather.db.entity.Session;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,7 +13,9 @@ import java.util.UUID;
 @Repository
 public class SessionRepository {
     @PersistenceContext
-    private  EntityManager entityManager;
+    private EntityManager entityManager;
+
+    private final String HQL_DELETE_EXPIRED_SESSIONS = "DELETE FROM Session s WHERE s.expiresAt < :now";
 
     public Session save(Session mySession) {
         entityManager.persist(mySession);
@@ -28,5 +29,12 @@ public class SessionRepository {
 
     public Optional<Session> findById(UUID id) {
         return Optional.ofNullable(entityManager.find(Session.class, id));
+    }
+
+    public int deleteExpiredSessions() {
+        int deletedCount = entityManager.createQuery(HQL_DELETE_EXPIRED_SESSIONS)
+                .setParameter("now", new Timestamp(System.currentTimeMillis()))
+                .executeUpdate();
+        return deletedCount;
     }
 }
