@@ -2,15 +2,10 @@ package com.frostetsky.weather.dto.mapper;
 
 import com.frostetsky.weather.dto.UserReadDto;
 import com.frostetsky.weather.db.entity.User;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-@Component
-public class UserMapper {
-    public UserReadDto toUserReadDto(User user) {
-        return new UserReadDto(
-                user.getId(),
-                user.getLogin()
-        );
-    }
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface UserMapper {
+    UserReadDto toDto(User user);
 }
