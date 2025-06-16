@@ -31,7 +31,7 @@ public class WeatherService {
         }
     }
 
-    private WeatherCardDto getWeatherCardByLocation(Location location) {
+    public WeatherCardDto getWeatherCardByLocation(Location location) {
         try {
             OpenWeatherDto weatherDto = openWeatherClient.getWeatherByCoordinates(
                     location.getLongitude(),
