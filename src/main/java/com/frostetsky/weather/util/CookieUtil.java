@@ -25,22 +25,22 @@ public class CookieUtil {
 
     public static ResponseCookie createSessionCookie(String session) {
         ResponseCookie cookie = ResponseCookie.from(COOKIE_SESSION, session)
-                .httpOnly(true)
-                .secure(true)
+                .httpOnly(false)
+                .secure(false)
                 .path("/")
                 .maxAge(Duration.ofHours(12))
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
         return cookie;
     }
 
     public static ResponseCookie createDeleteCookie() {
         ResponseCookie deleteCookie = ResponseCookie.from(COOKIE_SESSION, "")
-                .httpOnly(true)
-                .secure(true)
+                .httpOnly(false)
+                .secure(false)
                 .path("/")
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite("Lax")
                 .build();
         return deleteCookie;
     }
