@@ -34,7 +34,7 @@ public class SessionService {
         return sessionRepository.findById(sessionId);
     }
 
-    @Scheduled(fixedRate = 360000)
+    @Scheduled(fixedRate = 600000 * 12)
     @Transactional
     public void clearExpiredSession() {
         log.info("Starting expired sessions cleanup...");
